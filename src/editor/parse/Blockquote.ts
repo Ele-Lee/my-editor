@@ -1,7 +1,4 @@
 import { css } from '@emotion/css';
-
-import { makeNewDefaultLineDom, markHasParentContainer } from '../dom';
-import { ParseHtmlParams } from '../typing';
 import { createNode } from '../factory/create-node';
 
 const curTagName = 'blockquote';
@@ -10,7 +7,7 @@ export default createNode({
   rule: '>',
   tag: curTagName,
   // enterIntercept() {},
-  toDom(params: ParseHtmlParams) {
+  toDom(params, domAction) {
     const blockquoteWrap = document.createElement(curTagName);
 
     blockquoteWrap.className = css`
@@ -19,23 +16,16 @@ export default createNode({
       border-left: 4px solid rgb(94, 129, 172);
     `;
 
-    const newLineTag = makeNewDefaultLineDom();
+    domAction.markHasChildNode(blockquoteWrap, 'p');
 
-    markHasParentContainer(newLineTag, curTagName);
+    const newLineTag = domAction.makeNewDefaultLineDom();
+
+    domAction.markIsInParentScope(newLineTag, curTagName);
 
     if (params.innerHTML) {
       newLineTag.innerHTML = params.innerHTML;
     }
     blockquoteWrap.appendChild(newLineTag);
-    // if (params.setRange) {
-    //   params.setRange(newLineTag);
-    //   console.log(
-    //     '%celelee test:',
-    //     'background:#000;color:#fff',
-    //     params.setRange,
-    //     newLineTag
-    //   );
-    // }
 
     return blockquoteWrap;
   },
