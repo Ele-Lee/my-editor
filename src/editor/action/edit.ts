@@ -9,25 +9,23 @@ export class EditAction {
   @Inject()
   domAction!: DomAction;
 
-  parseText(range: Range) {
-    const curDomNodeValue = range.startContainer.nodeValue;
-
+  parseText(range: Range, curInputChar: string) {
+    const curDomNodeValue = range.startContainer.nodeValue + curInputChar;
     if (!curDomNodeValue) {
       return;
     }
-    const filstSpaceIndex = curDomNodeValue.indexOf(' ');
-    const markTagType = curDomNodeValue.substring(0, filstSpaceIndex)!;
-
+    const firstSpaceIndex = curDomNodeValue.indexOf(' ');
+    const markTagType = curDomNodeValue.substring(0, firstSpaceIndex)!;
     if (!markTagAdapterMap[markTagType]) {
       return;
     }
     const curInputtingDom = this.domAction.getCurDomByRange(range);
-
     const htmlTag = markTagAdapterMap[markTagType].toDom(
       {
         innerHTML:
-          curDomNodeValue.substring(filstSpaceIndex + 1) || defaultPlaceholder,
+          curDomNodeValue.substring(firstSpaceIndex + 1) || defaultPlaceholder,
         setRange: this.domAction.setStartRangeByDom,
+        curInputChar
       },
       this.domAction
     );

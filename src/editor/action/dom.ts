@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { Service, Inject } from 'typedi';
+import { InputStore } from '../store/input';
 
 import { getDomByStringOrEle, insertAfter, replaceDom } from '../utils/dom';
 
@@ -7,6 +8,9 @@ const PARENT_ATTR_KEY = 'data-parent';
 
 @Service()
 export class DomAction {
+  @Inject()
+  inputStore!: InputStore;
+
   initEditContainer(dom: HTMLElement | string) {
     const containerDom = getDomByStringOrEle(dom);
 
@@ -31,6 +35,10 @@ export class DomAction {
 
     const defaultTextTag = this.makeNewDefaultLineDom();
     element.appendChild(defaultTextTag);
+    element.addEventListener('change', (e) => {
+      this.inputStore.onInput(e)
+    })
+
     return element;
   }
 

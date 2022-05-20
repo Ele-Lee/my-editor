@@ -1,4 +1,5 @@
 import { Service, Inject } from 'typedi';
+import { InputStore } from '../store/input';
 import { DomAction } from './dom';
 import { EditAction } from './edit';
 
@@ -13,50 +14,79 @@ export class EventAction {
   domAction!: DomAction;
   @Inject()
   editAction!: EditAction;
+  @Inject()
+  inputStore!: InputStore;
 
   bindKeyboardEvent(editingDom: HTMLElement) {
     if (!editingDom) return;
 
-    editingDom?.addEventListener('keyup', this.onKeyupHandler.bind(this));
+    editingDom?.addEventListener('keydown', this.onKeydownHandler.bind(this));
     editingDom?.addEventListener('keypress', this.onKeypressHandler.bind(this));
   }
 
-  onKeyupHandler(e: KeyboardEvent) {
+  onKeydownHandler(e: KeyboardEvent) {
     const keyCode = e.keyCode;
-    if (![spaceKeyCode, enterKeyCode, keyCode].includes(keyCode)) {
+
+    console.log('%celelee test:', 'color:#fff;background:#000', e)
+    
+    this.inputStore.onInput(e)
+
+    if (![spaceKeyCode, enterKeyCode].includes(keyCode)) {
       return;
     }
 
-    const range = getSelection()?.getRangeAt(0).cloneRange();
-    if (!range) {
-      return;
+    const selection = window.getSelection && window.getSelection();
+    if (!selection || selection.rangeCount < 1) {
+      return
     }
+    const range = selection.getRangeAt(0).cloneRange();
 
-    this.editAction.parseText(range);
+    
+    this.editAction.parseText(range, e.key);
+    if (spaceKeyCode === keyCode) {
+      e.preventDefault();
+    }
   }
 
   onKeypressHandler(e: KeyboardEvent) {
-    const range = getSelection()?.getRangeAt(0).cloneRange();
-    if (!range) {
-      return;
+    if (!getSelection()) {
+      return
     }
-    const keyCode = e.keyCode;
-    if (keyCode === enterKeyCode) {
-      e.preventDefault();
-      const curInputtingDom = this.domAction.getCurDomByRange(range);
+    const selection = window.getSelection && window.getSelection();
+    if (!selection || selection.rangeCount < 1) {
+      return
+    }
 
-      if (this.domAction.verifyIsInParentScope(curInputtingDom)) {
-        if (!range.startContainer.nodeValue) {
-          curInputtingDom.remove();
-          this.domAction.addNewLineInCurScope(range);
+    const range = selection.getRangeAt(0).cloneRange();
+    const keyCode = e.keyCode;
+    switch (keyCode) {
+      case enterKeyCode: {
+        e.preventDefault();
+        const curInputtingDom = this.domAction.getCurDomByRange(range);
+
+        if (this.domAction.verifyIsInParentScope(curInputtingDom)) {
+          if (!range.startContainer.nodeValue) {
+            curInputtingDom.remove();
+            this.domAction.addNewLineInCurScope(range);
+          } else {
+            const sameTypeElement = curInputtingDom.cloneNode() as HTMLElement;
+            curInputtingDom.parentElement?.appendChild(sameTypeElement);
+            this.domAction.setStartRangeByDom(sameTypeElement);
+          }
         } else {
-          const sameTypeElement = curInputtingDom.cloneNode() as HTMLElement;
-          curInputtingDom.parentElement?.appendChild(sameTypeElement);
-          this.domAction.setStartRangeByDom(sameTypeElement);
+          this.domAction.addNewLineInCurScope(range);
         }
-      } else {
-        this.domAction.addNewLineInCurScope(range);
+
+        break;
       }
+      case backspaceKeyCode: {
+        console.log('%celelee test:', 'color:#fff;background:#000', 11)
+
+        break;
+      }
+
+      default:
+        break;
     }
   }
 }

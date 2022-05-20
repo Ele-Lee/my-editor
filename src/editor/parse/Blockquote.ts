@@ -22,10 +22,14 @@ export default createNode({
 
     domAction.markIsInParentScope(newLineTag, curTagName);
 
-    if (params.innerHTML) {
-      newLineTag.innerHTML = params.innerHTML;
-    }
+    newLineTag.innerHTML = params.innerHTML;
+    // console.log('%celelee test:', 'color:#fff;background:#0F0',params.innerHTML, `+${newLineTag.innerHTML}+`, newLineTag.outerHTML)
+    // setTimeout(()=>{
+    //   console.log('%celelee test:', 'color:#fff;background:#0F0',params.innerHTML, `+${newLineTag.innerHTML}+`, newLineTag.outerHTML)
+    // }, )
+    
     blockquoteWrap.appendChild(newLineTag);
+    // blockquoteWrap.innerHTML = newLineTag.outerHTML
 
     return blockquoteWrap;
   },

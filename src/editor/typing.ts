@@ -7,6 +7,7 @@ export interface NodeSchema {
 }
 
 export interface ParseHtmlParams {
-  innerHTML?: string;
-  setRange?: (targetDom: HTMLElement) => void;
+  innerHTML: string;
+  setRange: (targetDom: HTMLElement) => void;
+  curInputChar: string;
 }
