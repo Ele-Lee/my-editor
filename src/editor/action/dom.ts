@@ -46,6 +46,8 @@ export class DomAction {
     range: Range,
     newLineDom = this.makeNewDefaultLineDom()
   ) {
+    console.log('%celelee test:', 'color:#fff;background:#000', this.getCurDomByRange(range))
+    
     insertAfter(newLineDom, this.getCurDomByRange(range));
     this.setStartRangeByDom(newLineDom);
   }
@@ -63,6 +65,8 @@ export class DomAction {
   }
 
   getCurDomByRange(range: Range) {
+    console.log('%celelee test:', 'color:#fff;background:#00f', range)
+    
     if (range.startContainer.nodeType === Node.TEXT_NODE) {
       const rangeParentElement = range.startContainer.parentElement;
       if (!rangeParentElement) {

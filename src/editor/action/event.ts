@@ -27,11 +27,9 @@ export class EventAction {
   onKeydownHandler(e: KeyboardEvent) {
     const keyCode = e.keyCode;
 
-    console.log('%celelee test:', 'color:#fff;background:#000', e)
-    
     this.inputStore.onInput(e)
 
-    if (![spaceKeyCode, enterKeyCode].includes(keyCode)) {
+    if (![spaceKeyCode].includes(keyCode)) {
       return;
     }
 
@@ -41,10 +39,17 @@ export class EventAction {
     }
     const range = selection.getRangeAt(0).cloneRange();
 
+    switch (keyCode) {
+      case spaceKeyCode: {
+        this.editAction.parseText(range, e.key);
+        e.preventDefault();
+
+        break;
+      }
+        
     
-    this.editAction.parseText(range, e.key);
-    if (spaceKeyCode === keyCode) {
-      e.preventDefault();
+      default:
+        break;
     }
   }
 
@@ -74,6 +79,7 @@ export class EventAction {
             this.domAction.setStartRangeByDom(sameTypeElement);
           }
         } else {
+          // TOFIX 不能有效换行
           this.domAction.addNewLineInCurScope(range);
         }
 
