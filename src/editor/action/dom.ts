@@ -5,6 +5,7 @@ import { InputStore } from '../store/input';
 import { getDomByStringOrEle, insertAfter, replaceDom } from '../utils/dom';
 
 const PARENT_ATTR_KEY = 'data-parent';
+const CHILD_ATTR_KEY = 'data-child';
 
 @Service()
 export class DomAction {
@@ -46,8 +47,6 @@ export class DomAction {
     range: Range,
     newLineDom = this.makeNewDefaultLineDom()
   ) {
-    console.log('%celelee test:', 'color:#fff;background:#000', this.getCurDomByRange(range))
-    
     insertAfter(newLineDom, this.getCurDomByRange(range));
     this.setStartRangeByDom(newLineDom);
   }
@@ -65,8 +64,6 @@ export class DomAction {
   }
 
   getCurDomByRange(range: Range) {
-    console.log('%celelee test:', 'color:#fff;background:#00f', range)
-    
     if (range.startContainer.nodeType === Node.TEXT_NODE) {
       const rangeParentElement = range.startContainer.parentElement;
       if (!rangeParentElement) {
@@ -89,18 +86,27 @@ export class DomAction {
     defaultTextTag.setAttribute('class', getClassName);
     defaultTextTag.setAttribute('data-block', '1');
 
-    return defaultTextTag;
+    return defaultTextTag as HTMLElement;
   }
 
   markIsInParentScope(dom: HTMLElement, val: string) {
     dom.setAttribute(PARENT_ATTR_KEY, val);
+    return dom
   }
 
   verifyIsInParentScope(dom: HTMLElement) {
     return dom.attributes.getNamedItem(PARENT_ATTR_KEY);
   }
 
+  getParentScope(dom: HTMLElement) {
+    return dom.attributes.getNamedItem(PARENT_ATTR_KEY);
+  }
+
+  verifyHasChildScope(dom: HTMLElement) {
+    return dom.attributes.getNamedItem(CHILD_ATTR_KEY);
+  }
+
   markHasChildNode(dom: HTMLElement, val: string) {
-    dom.setAttribute('data-child', val);
+    dom.setAttribute(CHILD_ATTR_KEY, val);
   }
 }

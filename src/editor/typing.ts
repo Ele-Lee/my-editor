@@ -10,4 +10,5 @@ export interface ParseHtmlParams {
   innerHTML: string;
   setRange: (targetDom: HTMLElement) => void;
   curInputChar: string;
+  curInputtingDom: HTMLElement
 }

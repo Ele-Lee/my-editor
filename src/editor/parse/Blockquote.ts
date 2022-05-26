@@ -15,21 +15,21 @@ export default createNode({
       line-height: 1.75em;
       border-left: 4px solid rgb(94, 129, 172);
     `;
-
+    
     domAction.markHasChildNode(blockquoteWrap, 'p');
-
+    if(domAction.verifyHasChildScope(params.curInputtingDom.parentElement!)) {
+      domAction.markIsInParentScope(blockquoteWrap, curTagName)
+    }
     const newLineTag = domAction.makeNewDefaultLineDom();
 
     domAction.markIsInParentScope(newLineTag, curTagName);
 
     newLineTag.innerHTML = params.innerHTML;
-    // console.log('%celelee test:', 'color:#fff;background:#0F0',params.innerHTML, `+${newLineTag.innerHTML}+`, newLineTag.outerHTML)
-    // setTimeout(()=>{
-    //   console.log('%celelee test:', 'color:#fff;background:#0F0',params.innerHTML, `+${newLineTag.innerHTML}+`, newLineTag.outerHTML)
-    // }, )
-    
+
     blockquoteWrap.appendChild(newLineTag);
-    // blockquoteWrap.innerHTML = newLineTag.outerHTML
+    Promise.resolve().then(() => {
+      params.setRange(newLineTag)
+    })
 
     return blockquoteWrap;
   },

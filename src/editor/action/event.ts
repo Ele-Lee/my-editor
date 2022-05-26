@@ -21,7 +21,7 @@ export class EventAction {
     if (!editingDom) return;
 
     editingDom?.addEventListener('keydown', this.onKeydownHandler.bind(this));
-    editingDom?.addEventListener('keypress', this.onKeypressHandler.bind(this));
+    // editingDom?.addEventListener('keydown', this.onKeypressHandler.bind(this));
   }
 
   onKeydownHandler(e: KeyboardEvent) {
@@ -29,7 +29,7 @@ export class EventAction {
 
     this.inputStore.onInput(e)
 
-    if (![spaceKeyCode].includes(keyCode)) {
+    if (![spaceKeyCode, enterKeyCode].includes(keyCode)) {
       return;
     }
 
@@ -47,7 +47,40 @@ export class EventAction {
         break;
       }
         
-    
+      case enterKeyCode: {
+        
+        const curInputtingDom = this.domAction.getCurDomByRange(range);
+
+        if (this.domAction.verifyIsInParentScope(curInputtingDom)) {
+          if (!range.startContainer.nodeValue) {
+            const attrVal = this.domAction.getParentScope(curInputtingDom.parentElement!)?.value
+            let newLineTag
+            if(attrVal) {
+              newLineTag = this.domAction.markIsInParentScope(this.domAction.makeNewDefaultLineDom(), attrVal)
+            }
+            
+            curInputtingDom.remove();
+            this.domAction.addNewLineInCurScope(range, newLineTag);
+          } else {
+            const sameTypeElement = curInputtingDom.cloneNode() as HTMLElement;
+            curInputtingDom.parentElement?.appendChild(sameTypeElement);
+            this.domAction.setStartRangeByDom(sameTypeElement);
+          }
+          e.preventDefault();
+        } else {
+          console.log('%celelee test:', 'color:#fff;background:#000', 2, curInputtingDom)
+          // TOFIX 不能有效换行
+          
+          // this.domAction.addNewLineInCurScope(range);
+        }
+
+        break;
+      }
+      case backspaceKeyCode: {
+        console.log('%celelee test:', 'color:#fff;background:#000', 11)
+
+        break;
+      }
       default:
         break;
     }
@@ -80,6 +113,8 @@ export class EventAction {
           }
         } else {
           // TOFIX 不能有效换行
+          console.log('%celelee test:', 'color:#fff;background:#000', range)
+          
           this.domAction.addNewLineInCurScope(range);
         }
 

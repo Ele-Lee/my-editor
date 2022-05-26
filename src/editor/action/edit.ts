@@ -25,7 +25,8 @@ export class EditAction {
         innerHTML:
           curDomNodeValue.substring(firstSpaceIndex + 1) || defaultPlaceholder,
         setRange: this.domAction.setStartRangeByDom,
-        curInputChar
+        curInputChar,
+        curInputtingDom
       },
       this.domAction
     );

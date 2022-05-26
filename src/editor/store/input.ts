@@ -10,7 +10,7 @@ export class InputStore {
   onInput(e: Event) {
     // this.inputValue += val
 
-    console.log('%celelee test:', 'color:#fff;background:#ff0', this.inputValue, e)
+    // console.log('%celelee test:', 'color:#fff;background:#ff0', this.inputValue, e)
     
   }
 }
