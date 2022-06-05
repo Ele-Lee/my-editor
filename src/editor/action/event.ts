@@ -16,26 +16,27 @@ export class EventAction {
   editAction!: EditAction;
   @Inject()
   inputStore!: InputStore;
+  editingDom!: HTMLElement;
 
   bindKeyboardEvent(editingDom: HTMLElement) {
     if (!editingDom) return;
-
-    editingDom?.addEventListener('keydown', this.onKeydownHandler.bind(this));
+    this.editingDom = editingDom;
+    this.editingDom.addEventListener('keydown', this.onKeydownHandler.bind(this));
     // editingDom?.addEventListener('keydown', this.onKeypressHandler.bind(this));
   }
 
   onKeydownHandler(e: KeyboardEvent) {
     const keyCode = e.keyCode;
 
-    this.inputStore.onInput(e)
+    this.inputStore.onInput(e);
 
-    if (![spaceKeyCode, enterKeyCode].includes(keyCode)) {
+    if (![spaceKeyCode, enterKeyCode, backspaceKeyCode].includes(keyCode)) {
       return;
     }
 
     const selection = window.getSelection && window.getSelection();
     if (!selection || selection.rangeCount < 1) {
-      return
+      return;
     }
     const range = selection.getRangeAt(0).cloneRange();
 
@@ -46,21 +47,13 @@ export class EventAction {
 
         break;
       }
-        
+
       case enterKeyCode: {
-        
         const curInputtingDom = this.domAction.getCurDomByRange(range);
 
         if (this.domAction.verifyIsInParentScope(curInputtingDom)) {
-          if (!range.startContainer.nodeValue) {
-            const attrVal = this.domAction.getParentScope(curInputtingDom.parentElement!)?.value
-            let newLineTag
-            if(attrVal) {
-              newLineTag = this.domAction.markIsInParentScope(this.domAction.makeNewDefaultLineDom(), attrVal)
-            }
-            
-            curInputtingDom.remove();
-            this.domAction.addNewLineInCurScope(range, newLineTag);
+          if (this.domAction.isNoTextInCurDom(range)) {
+            this.editAction.undoParsedNode(range);
           } else {
             const sameTypeElement = curInputtingDom.cloneNode() as HTMLElement;
             curInputtingDom.parentElement?.appendChild(sameTypeElement);
@@ -68,66 +61,72 @@ export class EventAction {
           }
           e.preventDefault();
         } else {
-          console.log('%celelee test:', 'color:#fff;background:#000', 2, curInputtingDom)
+          console.log('%celelee test:', 'color:#fff;background:#000', 2, curInputtingDom);
           // TOFIX 不能有效换行
-          
+
           // this.domAction.addNewLineInCurScope(range);
         }
 
         break;
       }
       case backspaceKeyCode: {
-        console.log('%celelee test:', 'color:#fff;background:#000', 11)
-
-        break;
-      }
-      default:
-        break;
-    }
-  }
-
-  onKeypressHandler(e: KeyboardEvent) {
-    if (!getSelection()) {
-      return
-    }
-    const selection = window.getSelection && window.getSelection();
-    if (!selection || selection.rangeCount < 1) {
-      return
-    }
-
-    const range = selection.getRangeAt(0).cloneRange();
-    const keyCode = e.keyCode;
-    switch (keyCode) {
-      case enterKeyCode: {
-        e.preventDefault();
         const curInputtingDom = this.domAction.getCurDomByRange(range);
-
-        if (this.domAction.verifyIsInParentScope(curInputtingDom)) {
-          if (!range.startContainer.nodeValue) {
-            curInputtingDom.remove();
-            this.domAction.addNewLineInCurScope(range);
-          } else {
-            const sameTypeElement = curInputtingDom.cloneNode() as HTMLElement;
-            curInputtingDom.parentElement?.appendChild(sameTypeElement);
-            this.domAction.setStartRangeByDom(sameTypeElement);
-          }
-        } else {
-          // TOFIX 不能有效换行
-          console.log('%celelee test:', 'color:#fff;background:#000', range)
-          
-          this.domAction.addNewLineInCurScope(range);
+        if (this.editingDom.children[0] === curInputtingDom && !range.startContainer.nodeValue) {
+          e.preventDefault();
         }
-
+        if (this.domAction.verifyIsInParentScope(curInputtingDom) && this.domAction.isNoTextInCurDom(range)) {
+          this.editAction.undoParsedNode(range);
+          e.preventDefault();
+        }
         break;
       }
-      case backspaceKeyCode: {
-        console.log('%celelee test:', 'color:#fff;background:#000', 11)
-
-        break;
-      }
-
       default:
         break;
     }
   }
+
+  // onKeypressHandler(e: KeyboardEvent) {
+  //   if (!getSelection()) {
+  //     return
+  //   }
+  //   const selection = window.getSelection && window.getSelection();
+  //   if (!selection || selection.rangeCount < 1) {
+  //     return
+  //   }
+
+  //   const range = selection.getRangeAt(0).cloneRange();
+  //   const keyCode = e.keyCode;
+  //   switch (keyCode) {
+  //     case enterKeyCode: {
+  //       e.preventDefault();
+  //       const curInputtingDom = this.domAction.getCurDomByRange(range);
+
+  //       if (this.domAction.verifyIsInParentScope(curInputtingDom)) {
+  //         if (!range.startContainer.nodeValue) {
+  //           curInputtingDom.remove();
+  //           this.domAction.addNewLineInCurScope(range);
+  //         } else {
+  //           const sameTypeElement = curInputtingDom.cloneNode() as HTMLElement;
+  //           curInputtingDom.parentElement?.appendChild(sameTypeElement);
+  //           this.domAction.setStartRangeByDom(sameTypeElement);
+  //         }
+  //       } else {
+  //         // TOFIX 不能有效换行
+  //         console.log('%celelee test:', 'color:#fff;background:#000', range)
+
+  //         this.domAction.addNewLineInCurScope(range);
+  //       }
+
+  //       break;
+  //     }
+  //     case backspaceKeyCode: {
+  //       console.log('%celelee test:', 'color:#fff;background:#000', 11)
+
+  //       break;
+  //     }
+
+  //     default:
+  //       break;
+  //   }
+  // }
 }

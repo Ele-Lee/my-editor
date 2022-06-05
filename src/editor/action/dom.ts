@@ -36,17 +36,14 @@ export class DomAction {
 
     const defaultTextTag = this.makeNewDefaultLineDom();
     element.appendChild(defaultTextTag);
-    element.addEventListener('change', (e) => {
-      this.inputStore.onInput(e)
-    })
+    element.addEventListener('change', e => {
+      this.inputStore.onInput(e);
+    });
 
     return element;
   }
 
-  addNewLineInCurScope(
-    range: Range,
-    newLineDom = this.makeNewDefaultLineDom()
-  ) {
+  addNewLineInCurScope(range: Range, newLineDom = this.makeNewDefaultLineDom()) {
     insertAfter(newLineDom, this.getCurDomByRange(range));
     this.setStartRangeByDom(newLineDom);
   }
@@ -91,7 +88,7 @@ export class DomAction {
 
   markIsInParentScope(dom: HTMLElement, val: string) {
     dom.setAttribute(PARENT_ATTR_KEY, val);
-    return dom
+    return dom;
   }
 
   verifyIsInParentScope(dom: HTMLElement) {
@@ -108,5 +105,9 @@ export class DomAction {
 
   markHasChildNode(dom: HTMLElement, val: string) {
     dom.setAttribute(CHILD_ATTR_KEY, val);
+  }
+
+  isNoTextInCurDom(range: Range) {
+    return !range.startContainer.nodeValue;
   }
 }

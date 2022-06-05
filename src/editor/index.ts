@@ -15,7 +15,9 @@ class QCDown {
 
     this.editingDom = this.domAction.initEditContainer(containerDomParam);
 
-    this.domAction.setStartRangeByDom(this.editingDom);
+    if (this.editingDom.firstChild) {
+      this.domAction.setStartRangeByDom(this.editingDom.firstChild as HTMLElement);
+    }
 
     this.eventAction.bindKeyboardEvent(this.editingDom);
   }

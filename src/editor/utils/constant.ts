@@ -1,1 +1,2 @@
-export const defaultPlaceholder = '&ZeroWidthSpace;';
+export const defaultPlaceholder = '<br>';
+// export const defaultPlaceholder = '&ZeroWidthSpace;';
