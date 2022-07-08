@@ -33,7 +33,7 @@ export class EditAction {
       this.domAction
     );
 
-    replaceDom(curInputtingDom, htmlTag);
+    return replaceDom(curInputtingDom, htmlTag);
   }
 
   undoParsedNode(range: Range) {

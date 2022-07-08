@@ -42,8 +42,10 @@ export class EventAction {
 
     switch (keyCode) {
       case spaceKeyCode: {
-        this.editAction.parseText(range, e.key);
-        e.preventDefault();
+        const parseTextRes = this.editAction.parseText(range, e.key);
+        if(!!parseTextRes) {
+          e.preventDefault();
+        }
 
         break;
       }
@@ -70,6 +72,7 @@ export class EventAction {
         break;
       }
       case backspaceKeyCode: {
+        
         const curInputtingDom = this.domAction.getCurDomByRange(range);
         if (this.editingDom.children[0] === curInputtingDom && !range.startContainer.nodeValue) {
           e.preventDefault();
